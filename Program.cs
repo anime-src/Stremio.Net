@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +7,7 @@ using Newtonsoft.Json.Converters;
 using Serilog;
 using Stremio.Net.Addons;
 using Stremio.Net.Addons.Providers;
+using Stremio.Net.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -23,11 +23,11 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAddons(options =>
+builder.Services.AddStremioAddons(options =>
 {
-    options.Register<DummyAddonProvider>(AddonProviders.HanimeTv);
-    options.Register<DummyAddonProvider>(AddonProviders.Dummy);
+    options.Register<DummyAddonProvider>(AddonProviderNames.Dummy);
 });
+builder.Services.AddStremioServices();
 
 WebApplication app = builder.Build();
 

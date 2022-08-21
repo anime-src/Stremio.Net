@@ -1,21 +1,22 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Stremio.Net.Extensions;
 
-namespace Stremio.Net.Addons;
+namespace Stremio.Net.Addons.Resolvers;
 
 public class SubdomainAddonProviderNameResolver : IAddonProviderNameResolver
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private static readonly ValueTask<string> EmptyResult = ValueTask.FromResult(string.Empty);
+    private static readonly ValueTask<string?> EmptyResult = ValueTask.FromResult<string?>(null);
     
     public SubdomainAddonProviderNameResolver(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public ValueTask<string> ResolveAsync()
+    public ValueTask<string?> ResolveAsync(CancellationToken cancellationToken)
     {
         HttpContext? context = _httpContextAccessor.HttpContext;
         if (context is null) return EmptyResult;
@@ -27,9 +28,8 @@ public class SubdomainAddonProviderNameResolver : IAddonProviderNameResolver
         var result = url.HostNameType == UriHostNameType.Dns ? url.Host.Split('.')[0] : string.Empty;
 
         if (string.IsNullOrEmpty(result) && context.IsLocalRequest())
-        {
-            return ValueTask.FromResult(AddonProviders.Dummy);
-        }
-        return ValueTask.FromResult(result);
+            result = AddonProviderNames.Dummy;
+
+        return ValueTask.FromResult<string?>(result);
     }
 }
