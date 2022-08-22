@@ -17,9 +17,14 @@ public static class AddonRegistrationExtensions
         services.AddSingleton<IAddonProviderOptions>(provider => provider.GetRequiredService<AddonProviderRegistrationOptions>());
         services.AddTransient<IAddonProviderFactory, AddonProviderFactory>();
         services.AddTransient<IAddonProviderNameResolver, SubdomainAddonProviderNameResolver>();
-        services.AddTransient<IAddonProviderNameResolver, QueryStringAddonProviderNameResolver>();
+        services.AddTransient<IAddonProviderNameResolver, PathAddonProviderNameResolver>();
         services.AddTransient<IAddonProviderNameResolverService, AddonProviderNameResolverService>();
         
+        services.AddScoped<AddonProviderNameContext>();
+        services.AddScoped<IAddonProviderNameContext>(provider => provider.GetRequiredService<AddonProviderNameContext>());
+        services.AddScoped<IAddonProviderNameSetter>(provider => provider.GetRequiredService<AddonProviderNameContext>());
+        services.AddSingleton<IAddonProviderNameStore, AddonProviderNameStore>();
+
         foreach (var providerType in registrationOptions.GetAllProviderTypes())
             services.AddTransient(providerType);
     }

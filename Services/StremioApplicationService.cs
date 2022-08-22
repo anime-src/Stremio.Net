@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stremio.Net.Addons;
+using Stremio.Net.Models;
 using Stremio.Net.Models.Catalogs;
 using Stremio.Net.Models.Metadata;
 
@@ -11,44 +12,44 @@ namespace Stremio.Net.Services;
 public class StremioApplicationService : IStremioApplicationService
 {
     private readonly IAddonProviderFactory _addonProviderFactory;
-    private readonly IAddonProviderNameResolverService _addonProviderNameResolvers;
+    private readonly IAddonProviderNameContext _addonProviderNameContext;
 
-    public StremioApplicationService(IAddonProviderFactory addonProviderFactory, IAddonProviderNameResolverService addonProviderNameResolvers)
+    public StremioApplicationService(IAddonProviderFactory addonProviderFactory, IAddonProviderNameContext addonProviderNameContext)
     {
         _addonProviderFactory = addonProviderFactory;
-        _addonProviderNameResolvers = addonProviderNameResolvers;
+        _addonProviderNameContext = addonProviderNameContext;
     }
     
     public async ValueTask<IActionResult> GetManifestAsync(CancellationToken cancellationToken = default)
     {
-        return await ExecuteProviderAsync(async provider =>
+        return await ExecuteProviderAsync(async  (provider, providerName) =>
         {
-            var manifest = await provider.GetManifestAsync(cancellationToken);
+            Manifest manifest = await provider.GetManifestAsync(providerName, cancellationToken);
             return new OkObjectResult(manifest);
-        }, cancellationToken);
+        });
     }
 
     public async ValueTask<IActionResult> GetCatalogMetaAsync(string type, string id, string? extraProps, CancellationToken cancellationToken = default)
     {
-        return await ExecuteProviderAsync(async provider =>
+        return await ExecuteProviderAsync(async (provider, providerName) =>
         {
-            Meta[] metas = await provider.GetCatalogMetaAsync(type, id, ExtraValue.Parse(extraProps), cancellationToken);
+            Meta[] metas = await provider.GetCatalogMetaAsync(type, id, ExtraValue.Parse(extraProps), providerName, cancellationToken);
             return new OkObjectResult(new { metas });
-        }, cancellationToken);
+        });
     }
 
-    private async ValueTask<IActionResult> ExecuteProviderAsync(Func<IAddonProvider, ValueTask<IActionResult>> func, CancellationToken cancellationToken)
+    private async ValueTask<IActionResult> ExecuteProviderAsync(Func<IAddonProvider, AddonProviderName, ValueTask<IActionResult>> func)
     {
-        string? resolvedAddonName = await _addonProviderNameResolvers.ResolveAsync(cancellationToken);
+        AddonProviderName? providerName = _addonProviderNameContext.CurrentProvider;
 
-        if (string.IsNullOrEmpty(resolvedAddonName))
+        if (providerName is null)
             return new BadRequestObjectResult("Failed to resolve stremio addon!");
 
-        IAddonProvider? provider = _addonProviderFactory.ResolveAddon(resolvedAddonName);
+        IAddonProvider? addonProvider = _addonProviderFactory.ResolveAddon(providerName.Name);
 
-        if (provider is null)
-            return new BadRequestObjectResult($"Failed to resolve '{resolvedAddonName}' stremio addon provider!");
+        if (addonProvider is null)
+            return new BadRequestObjectResult($"Failed to resolve '{providerName.Name}' stremio addon provider!");
 
-        return await func(provider);
+        return await func(addonProvider, providerName);
     }
 }

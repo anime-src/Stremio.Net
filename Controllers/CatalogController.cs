@@ -7,6 +7,7 @@ namespace Stremio.Net.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Route("{any:regex(^.*$)}/[controller]")]
 public class CatalogController : ControllerBase
 {
     private readonly IStremioApplicationService _stremioApplicationService;
@@ -17,15 +18,11 @@ public class CatalogController : ControllerBase
     }
 
     // GET /catalog/type/id.json
+    // GET /catalog/type/id/extra.name=value.json
+    // GET /catalog/type/id/extra.name1=value1&extra.name2=value2.json
     [HttpGet("{type}/{id}.json")]
-    public async Task<IActionResult> Get(string type, string id, CancellationToken cancellationToken)
-    {
-        return await _stremioApplicationService.GetCatalogMetaAsync(type, id, null, cancellationToken);
-    }
-    
-    // GET /catalog/type/id/prop1=val&prop2=val.json
     [HttpGet("{type}/{id}/{extraProps}.json")]
-    public async Task<IActionResult> GetWithExtras(string type, string id, string? extraProps, CancellationToken cancellationToken)
+    public async Task<IActionResult> Get(string type, string id, string? extraProps, CancellationToken cancellationToken)
     {
         return await _stremioApplicationService.GetCatalogMetaAsync(type, id, extraProps, cancellationToken);
     }

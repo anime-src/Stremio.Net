@@ -12,6 +12,8 @@ public interface IAddonProviderRegistrationOptions
 public interface IAddonProviderOptions
 {
     Type? GetProviderType(string value);
+
+    IReadOnlyList<string> GetAllProviderNames();
 }
 
 public class AddonProviderRegistrationOptions : IAddonProviderRegistrationOptions, IAddonProviderOptions
@@ -24,6 +26,8 @@ public class AddonProviderRegistrationOptions : IAddonProviderRegistrationOption
     }
 
     public IReadOnlyList<Type> GetAllProviderTypes() => _addonProviders.Values.ToList();
-    
+
+    public IReadOnlyList<string> GetAllProviderNames() => _addonProviders.Keys.ToList();
+
     public Type? GetProviderType(string value) => _addonProviders.TryGetValue(value, out Type? providerType) ? providerType : null;
 }

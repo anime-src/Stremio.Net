@@ -10,7 +10,7 @@ namespace Stremio.Net.Addons;
 
 public interface IAddonProvider
 {
-    ValueTask<Manifest> GetManifestAsync(CancellationToken cancellationToken = default);
+    ValueTask<Manifest> GetManifestAsync(AddonProviderName? providerName = null, CancellationToken cancellationToken = default);
 
-    ValueTask<Meta[]> GetCatalogMetaAsync(string type, string id, IEnumerable<ExtraValue> extras, CancellationToken cancellationToken = default);
+    ValueTask<Meta[]> GetCatalogMetaAsync(string type, string id, IEnumerable<ExtraValue> extras, AddonProviderName? providerName = null, CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,6 @@
 namespace Stremio.Net.Addons;
 
-public class AddonProviderNames
+public static class AddonProviderNames
 {
     public const string Dummy = "dummy";
 }

@@ -6,6 +6,8 @@ using Stremio.Net.Services;
 namespace Stremio.Net.Controllers;
 
 [ApiController]
+[Route("manifest.json")]
+[Route("{any:regex(^.*$)}/manifest.json")]
 public class ManifestController : ControllerBase
 {
     private readonly IStremioApplicationService _stremioApplicationService;
@@ -15,7 +17,6 @@ public class ManifestController : ControllerBase
         _stremioApplicationService = stremioApplicationService;
     }
 
-    [Route("manifest.json")]
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
     {

@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Stremio.Net.Extensions;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Stremio.Net.Addons.Resolvers;
 
@@ -10,26 +10,37 @@ public class SubdomainAddonProviderNameResolver : IAddonProviderNameResolver
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private static readonly ValueTask<string?> EmptyResult = ValueTask.FromResult<string?>(null);
-    
+
     public SubdomainAddonProviderNameResolver(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public ValueTask<string?> ResolveAsync(CancellationToken cancellationToken)
+    public ValueTask<string?> ResolveAsync(HttpContext? context = null, CancellationToken cancellationToken = default)
     {
-        HttpContext? context = _httpContextAccessor.HttpContext;
+        context ??= _httpContextAccessor.HttpContext;
         if (context is null) return EmptyResult;
 
-        HttpRequest contextRequest = context.Request;
+        // example: https://addon1.domain.com/ -> gives addon1
+        // example: https://addon2.domain.com/manifest.json -> gives addon2
+        string? subDomain = GetSubDomain(new Uri(context.Request.GetDisplayUrl()));
 
-        var url = new Uri($"{contextRequest.Scheme}://{contextRequest.Host}{contextRequest.PathBase}{contextRequest.Path}{contextRequest.QueryString}");
-        
-        var result = url.HostNameType == UriHostNameType.Dns ? url.Host.Split('.')[0] : string.Empty;
+        return ValueTask.FromResult(subDomain);
+    }
 
-        if (string.IsNullOrEmpty(result) && context.IsLocalRequest())
-            result = AddonProviderNames.Dummy;
+    private static string? GetSubDomain(Uri url)
+    {
+        if (url.HostNameType == UriHostNameType.Dns)
+        {
+            string host = url.Host;
 
-        return ValueTask.FromResult<string?>(result);
+            if (host.Split('.').Length > 2)
+            {
+                int lastIndex = host.LastIndexOf(".", StringComparison.Ordinal);
+                int index = host.LastIndexOf(".", lastIndex - 1, StringComparison.Ordinal);
+                return host.Substring(0, index);
+            }
+        }
+        return null;
     }
 }
