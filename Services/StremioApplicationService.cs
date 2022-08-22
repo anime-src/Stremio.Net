@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Stremio.Net.Addons;
 using Stremio.Net.Models;
@@ -19,7 +20,22 @@ public class StremioApplicationService : IStremioApplicationService
         _addonProviderFactory = addonProviderFactory;
         _addonProviderNameContext = addonProviderNameContext;
     }
-    
+
+    public async ValueTask<IActionResult> GetAddonPageAsync(CancellationToken cancellationToken = default)
+    {
+        return await ExecuteProviderAsync(async  (provider, providerName) =>
+        {
+            string page = await provider.GetPageAsync(providerName, cancellationToken);
+            
+            return new ContentResult
+            {
+                Content = page,
+                ContentType = "text/html; charset=UTF-8",
+                StatusCode = StatusCodes.Status200OK
+            };
+        });
+    }
+
     public async ValueTask<IActionResult> GetManifestAsync(CancellationToken cancellationToken = default)
     {
         return await ExecuteProviderAsync(async  (provider, providerName) =>

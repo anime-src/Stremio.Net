@@ -15,20 +15,20 @@ namespace Stremio.Net.Routings
 
         public async Task Invoke(HttpContext context, IAddonProviderNameResolverService nameResolverService, IAddonProviderNameSetter addonProviderNameSetter, IAddonProviderNameStore addonProviderNameStore)
         {
-            string? path = context.Request.Path.Value;
-         
-            if (string.IsNullOrEmpty(path) || path == "/")
-            {
-                await context.Response.WriteAsync("Hello From Stremio.Net!");
-                return;
-            }
-            
             string? resolvedProviderName = await nameResolverService.ResolveAsync(context);
 
             AddonProviderName? providerName = addonProviderNameStore.GetProviderName(resolvedProviderName);
 
             if (providerName == null)
             {
+                string? path = context.Request.Path.Value;
+         
+                if (string.IsNullOrEmpty(path) || path == "/")
+                {
+                    await context.Response.WriteAsync("Hello From Stremio.Net!");
+                    return;
+                }
+
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsJsonAsync(new { Message = "Unknown stremio addon!" }).ConfigureAwait(false);
                 return;

@@ -24,7 +24,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 });
 builder.Services.AddStremioAddons(options =>
 {
-    options.Register<DummyAddonProvider>(AddonProviderNames.Dummy);
+    options.Register<DummyAddonProvider>(AddonProviderNames.Demo);
 });
 builder.Services.AddStremioServices();
 

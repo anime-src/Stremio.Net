@@ -13,4 +13,6 @@ public interface IAddonProvider
     ValueTask<Manifest> GetManifestAsync(AddonProviderName? providerName = null, CancellationToken cancellationToken = default);
 
     ValueTask<Meta[]> GetCatalogMetaAsync(string type, string id, IEnumerable<ExtraValue> extras, AddonProviderName? providerName = null, CancellationToken cancellationToken = default);
+    
+    ValueTask<string> GetPageAsync(AddonProviderName? providerName = null, CancellationToken cancellationToken = default);
 }

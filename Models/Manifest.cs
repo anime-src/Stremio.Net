@@ -30,5 +30,11 @@ namespace Stremio.Net.Models
 
         [JsonProperty("idPrefixes")] 
         public string[]? IdPrefixes { get; set; }
+        
+        [JsonProperty("background")] 
+        public string? Background { get; set; }
+        
+        [JsonProperty("logo")] 
+        public string? Logo { get; set; }
     }
 }

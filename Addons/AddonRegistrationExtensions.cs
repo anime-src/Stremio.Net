@@ -24,7 +24,8 @@ public static class AddonRegistrationExtensions
         services.AddScoped<IAddonProviderNameContext>(provider => provider.GetRequiredService<AddonProviderNameContext>());
         services.AddScoped<IAddonProviderNameSetter>(provider => provider.GetRequiredService<AddonProviderNameContext>());
         services.AddSingleton<IAddonProviderNameStore, AddonProviderNameStore>();
-
+        services.AddSingleton<IAddonPageBuilder, AddonPageBuilder>();
+        
         foreach (var providerType in registrationOptions.GetAllProviderTypes())
             services.AddTransient(providerType);
     }

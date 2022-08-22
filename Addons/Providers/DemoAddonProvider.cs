@@ -22,7 +22,7 @@ public class DummyAddonProvider : IAddonProvider
         new Extra { Name = "genre", IsRequired = false, Options = Genres }
     };
 
-    private static readonly Manifest Manifest = CreateManifest("Stremio.Net.DummyProvider");
+    private static readonly Manifest Manifest = CreateManifest("demo");
 
     private static Manifest CreateManifest(string id)
     {
@@ -30,7 +30,7 @@ public class DummyAddonProvider : IAddonProvider
         {
             Id = $"stremio.net.{id.ToLower()}",
             Version = "1.0.0",
-            Name = "Stremio.Net",
+            Name = "Demo Addon",
             Description = "Sample addon made C# ASP.NET CORE 6 providing a few public domain movies",
             Resources = new[]
             {
@@ -42,8 +42,8 @@ public class DummyAddonProvider : IAddonProvider
             Types = new[] { "movie", "series" },
             Catalogs = new[]
             {
-                new Catalog { Type = "movie", Id = "stremio-net-movies", Name = "Stremio.Net Movies", Extra = Extras },
-                new Catalog { Type = "series", Id = "stremio-net-series", Name = "Stremio.Net Series", Extra = Extras }
+                new Catalog { Type = "movie", Id = "stremio-net-movies", Name = "Demo Addon Movies", Extra = Extras },
+                new Catalog { Type = "series", Id = "stremio-net-series", Name = "Demo Addon Series", Extra = Extras }
             }
         };
     }
@@ -100,6 +100,13 @@ public class DummyAddonProvider : IAddonProvider
         .ToArray();
 
 
+    private readonly IAddonPageBuilder _pageBuilder;
+
+    public DummyAddonProvider(IAddonPageBuilder pageBuilder)
+    {
+        _pageBuilder = pageBuilder;
+    }
+    
     public ValueTask<Manifest> GetManifestAsync(AddonProviderName? providerName = null, CancellationToken cancellationToken = default)
     {
         return ValueTask.FromResult(providerName != null ? CreateManifest(providerName.Name) : Manifest);
@@ -108,5 +115,12 @@ public class DummyAddonProvider : IAddonProvider
     public ValueTask<Meta[]> GetCatalogMetaAsync(string type, string id, IEnumerable<ExtraValue> extras, AddonProviderName? providerName = null, CancellationToken cancellationToken = default)
     {
         return ValueTask.FromResult(Catalog.Where(x => string.Equals(x.Type.ToString(), type, StringComparison.OrdinalIgnoreCase)).ToArray());
+    }
+
+    public  ValueTask<string> GetPageAsync(AddonProviderName? providerName = null, CancellationToken cancellationToken = default)
+    {
+        var manifest = providerName != null ? CreateManifest(providerName.Name) : Manifest;
+
+        return ValueTask.FromResult(_pageBuilder.BuildPage(manifest));
     }
 }

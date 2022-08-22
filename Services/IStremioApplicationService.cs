@@ -6,6 +6,8 @@ namespace Stremio.Net.Services;
 
 public interface IStremioApplicationService
 {
+    ValueTask<IActionResult> GetAddonPageAsync(CancellationToken cancellationToken = default);
+    
     ValueTask<IActionResult> GetManifestAsync(CancellationToken cancellationToken = default);
 
     ValueTask<IActionResult> GetCatalogMetaAsync(string type, string id, string? extraProps, CancellationToken cancellationToken = default);
