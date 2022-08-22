@@ -14,7 +14,7 @@ public interface IAddonPageBuilder
 
 public class AddonPageBuilder : IAddonPageBuilder
 {
-    private static readonly Lazy<string> LazyPageTemplate = new Lazy<string>(() => typeof(AddonPageBuilder).Assembly.GetManifestResourceFile("LandingTemplate.html"));
+    private static readonly Lazy<string> LazyPageTemplate = new Lazy<string>(() => typeof(AddonPageBuilder).Assembly.GetManifestResourceFile("AddonPageTemplate.html"));
 
     private const string AddonName = "{AddonName}";
     private const string AddonBackgroundImage = "{AddonBackgroundImage}";

@@ -15,7 +15,12 @@
 
     <ItemGroup>
       <None Remove="Addons\LandingTemplate.html" />
-      <EmbeddedResource Include="Addons\LandingTemplate.html" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\AddonPageTemplate.html" />
+      <None Remove="Resources\StremioNetPageTemplate.html" />
+      <EmbeddedResource Include="Resources\StremioNetPageTemplate.html" />
     </ItemGroup>
 
 </Project>

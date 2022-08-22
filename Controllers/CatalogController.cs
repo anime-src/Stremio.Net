@@ -5,6 +5,8 @@ using Stremio.Net.Services;
 
 namespace Stremio.Net.Controllers;
 
+// R: {*addon}.domain.com/catalog
+// R: domain.com/{*addon}/catalog
 [ApiController]
 [Route("[controller]")]
 [Route("{any:regex(^.*$)}/[controller]")]

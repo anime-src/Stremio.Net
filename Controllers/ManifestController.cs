@@ -6,8 +6,6 @@ using Stremio.Net.Services;
 namespace Stremio.Net.Controllers;
 
 [ApiController]
-[Route("manifest.json")]
-[Route("{any:regex(^.*$)}/manifest.json")]
 public class ManifestController : ControllerBase
 {
     private readonly IStremioApplicationService _stremioApplicationService;
@@ -17,9 +15,23 @@ public class ManifestController : ControllerBase
         _stremioApplicationService = stremioApplicationService;
     }
 
+    // R: {*addon}.domain.com/manifest.json
+    // R: domain.com/{*addon}/manifest.json
     [HttpGet]
-    public async Task<IActionResult> Get(CancellationToken cancellationToken = default)
+    [Route("manifest.json")]
+    [Route("{any:regex(^.*$)}/manifest.json")]
+    public async Task<IActionResult> GetManifest(CancellationToken cancellationToken = default)
     {
         return await _stremioApplicationService.GetManifestAsync(cancellationToken);
+    }
+    
+    // R: {*addon}.domain.com/
+    // R: domain.com/{*addon}/
+    [HttpGet]
+    [Route("/")]
+    [Route("{any:regex(^.*$)}")]
+    public async Task<IActionResult> GetPage(CancellationToken cancellationToken = default)
+    {
+        return await _stremioApplicationService.GetAddonPageAsync(cancellationToken);
     }
 }

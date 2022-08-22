@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Stremio.Net.Addons;
+using Stremio.Net.Extensions;
 
 namespace Stremio.Net.Routings
 {
@@ -25,12 +26,14 @@ namespace Stremio.Net.Routings
          
                 if (string.IsNullOrEmpty(path) || path == "/")
                 {
-                    await context.Response.WriteAsync("Hello From Stremio.Net!");
+                    context.Response.ContentType = "text/html; charset=UTF-8";
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    await context.Response.WriteAsync(GetType().Assembly.GetManifestResourceFile("StremioNetPageTemplate.html"));
                     return;
                 }
 
                 context.Response.StatusCode = 404;
-                await context.Response.WriteAsJsonAsync(new { Message = "Unknown stremio addon!" }).ConfigureAwait(false);
+                await context.Response.WriteAsJsonAsync(new { Message = "Unknown Stremio Addon!" }).ConfigureAwait(false);
                 return;
             }
 
