@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Stremio.Net.Addons;
-using Stremio.Net.Extensions;
+using Stremio.Net.Pages;
 
-namespace Stremio.Net.Routings
+namespace Stremio.Net.Routing
 {
     public class StremioMiddleware
     {
@@ -14,7 +14,11 @@ namespace Stremio.Net.Routings
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IAddonProviderNameResolverService nameResolverService, IAddonProviderNameSetter addonProviderNameSetter, IAddonProviderNameStore addonProviderNameStore)
+        public async Task Invoke(HttpContext context, 
+                                 IAddonProviderNameResolverService nameResolverService, 
+                                 IAddonProviderNameSetter addonProviderNameSetter, 
+                                 IAddonProviderNameStore addonProviderNameStore,
+                                 ILandingPageBuilder landingPageBuilder)
         {
             string? resolvedProviderName = await nameResolverService.ResolveAsync(context);
 
@@ -26,9 +30,8 @@ namespace Stremio.Net.Routings
          
                 if (string.IsNullOrEmpty(path) || path == "/")
                 {
-                    context.Response.ContentType = "text/html; charset=UTF-8";
-                    context.Response.StatusCode = StatusCodes.Status200OK;
-                    await context.Response.WriteAsync(GetType().Assembly.GetManifestResourceFile("StremioNetPageTemplate.html"));
+                    await HandleLandingPageAsync(landingPageBuilder, context);
+                 
                     return;
                 }
 
@@ -40,6 +43,13 @@ namespace Stremio.Net.Routings
             addonProviderNameSetter.CurrentProvider = providerName;
 
             await _next(context);
+        }
+
+        private static async Task HandleLandingPageAsync(ILandingPageBuilder landingPageBuilder, HttpContext context)
+        {
+            context.Response.ContentType = "text/html; charset=UTF-8";
+            context.Response.StatusCode = StatusCodes.Status200OK;
+            await context.Response.WriteAsync(await landingPageBuilder.BuildPageAsync());
         }
     }
 }

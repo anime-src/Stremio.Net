@@ -21,6 +21,7 @@
       <EmbeddedResource Include="Resources\AddonPageTemplate.html" />
       <None Remove="Resources\StremioNetPageTemplate.html" />
       <EmbeddedResource Include="Resources\StremioNetPageTemplate.html" />
+      <None Remove="Addons\Providers\NodeJs\DemoNodeJs\demo-nodejs-addon.js" />
     </ItemGroup>
 
 </Project>

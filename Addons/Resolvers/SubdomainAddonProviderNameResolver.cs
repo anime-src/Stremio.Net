@@ -4,43 +4,44 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 
-namespace Stremio.Net.Addons.Resolvers;
-
-public class SubdomainAddonProviderNameResolver : IAddonProviderNameResolver
+namespace Stremio.Net.Addons.Resolvers
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private static readonly ValueTask<string?> EmptyResult = ValueTask.FromResult<string?>(null);
-
-    public SubdomainAddonProviderNameResolver(IHttpContextAccessor httpContextAccessor)
+    public class SubdomainAddonProviderNameResolver : IAddonProviderNameResolver
     {
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly ValueTask<string?> EmptyResult = ValueTask.FromResult<string?>(null);
 
-    public ValueTask<string?> ResolveAsync(HttpContext? context = null, CancellationToken cancellationToken = default)
-    {
-        context ??= _httpContextAccessor.HttpContext;
-        if (context is null) return EmptyResult;
-
-        // example: https://addon1.domain.com/ -> gives addon1
-        // example: https://addon2.domain.com/manifest.json -> gives addon2
-        string? subDomain = GetSubDomain(new Uri(context.Request.GetDisplayUrl()));
-
-        return ValueTask.FromResult(subDomain);
-    }
-
-    private static string? GetSubDomain(Uri url)
-    {
-        if (url.HostNameType == UriHostNameType.Dns)
+        public SubdomainAddonProviderNameResolver(IHttpContextAccessor httpContextAccessor)
         {
-            string host = url.Host;
-
-            if (host.Split('.').Length > 2)
-            {
-                int lastIndex = host.LastIndexOf(".", StringComparison.Ordinal);
-                int index = host.LastIndexOf(".", lastIndex - 1, StringComparison.Ordinal);
-                return host.Substring(0, index);
-            }
+            _httpContextAccessor = httpContextAccessor;
         }
-        return null;
+
+        public ValueTask<string?> ResolveAsync(HttpContext? context = null, CancellationToken cancellationToken = default)
+        {
+            context ??= _httpContextAccessor.HttpContext;
+            if (context is null) return EmptyResult;
+
+            // example: https://addon1.domain.com/ -> gives addon1
+            // example: https://addon2.domain.com/manifest.json -> gives addon2
+            string? subDomain = GetSubDomain(new Uri(context.Request.GetDisplayUrl()));
+
+            return ValueTask.FromResult(subDomain);
+        }
+
+        private static string? GetSubDomain(Uri url)
+        {
+            if (url.HostNameType == UriHostNameType.Dns)
+            {
+                string host = url.Host;
+
+                if (host.Split('.').Length > 2)
+                {
+                    int lastIndex = host.LastIndexOf(".", StringComparison.Ordinal);
+                    int index = host.LastIndexOf(".", lastIndex - 1, StringComparison.Ordinal);
+                    return host.Substring(0, index);
+                }
+            }
+            return null;
+        }
     }
 }

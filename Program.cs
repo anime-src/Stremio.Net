@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog;
+using Stremio.Net;
 using Stremio.Net.Addons;
 using Stremio.Net.Addons.Providers;
-using Stremio.Net.Routings;
-using Stremio.Net.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +20,10 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
     options.SerializerSettings.Converters.Add(new StringEnumConverter());
 });
-builder.Services.AddStremioAddons(options =>
+builder.Services.AddStremio(options =>
 {
     options.Register<DummyAddonProvider>(AddonProviderNames.Demo);
 });
-builder.Services.AddStremioServices();
 
 WebApplication app = builder.Build();
 
@@ -37,6 +34,6 @@ app.UseCors(corsPolicyBuilder =>
         .AllowAnyMethod()
 );
 
-app.UseMiddleware<StremioMiddleware>();
+app.UseStremio();
 app.MapControllers();
 app.Run();

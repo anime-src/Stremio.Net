@@ -1,13 +1,14 @@
 using System.Runtime.Serialization;
 
-namespace Stremio.Net.Models.Metadata;
-
-public enum PosterShape
+namespace Stremio.Net.Models.Metadata
 {
-    [EnumMember(Value = "square")]
-    Square,
-    [EnumMember(Value = "regular")]
-    Regular,
-    [EnumMember(Value = "landscape")]
-    Landscape
+    public enum PosterShape
+    {
+        [EnumMember(Value = "square")]
+        Square,
+        [EnumMember(Value = "regular")]
+        Regular,
+        [EnumMember(Value = "landscape")]
+        Landscape
+    }
 }

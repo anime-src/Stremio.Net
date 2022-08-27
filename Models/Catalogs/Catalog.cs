@@ -1,18 +1,19 @@
 using Newtonsoft.Json;
 
-namespace Stremio.Net.Models.Catalogs;
-
-public class Catalog
+namespace Stremio.Net.Models.Catalogs
 {
-    [JsonProperty("id", Required = Required.Always)]
-    public string Id { get; set; } = null!;
+    public class Catalog
+    {
+        [JsonProperty("id", Required = Required.Always)]
+        public string Id { get; set; } = null!;
 
-    [JsonProperty("name")] 
-    public string? Name { get; set; }
+        [JsonProperty("name")] 
+        public string? Name { get; set; }
 
-    [JsonProperty("type", Required = Required.Always)]
-    public string Type { get; set; } = null!;
+        [JsonProperty("type", Required = Required.Always)]
+        public string Type { get; set; } = null!;
     
-    [JsonProperty("extra")] 
-    public Extra[]? Extra { get; set; }
+        [JsonProperty("extra")] 
+        public Extra[]? Extra { get; set; }
+    }
 }

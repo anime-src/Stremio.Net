@@ -1,11 +1,12 @@
 using System.Runtime.Serialization;
 
-namespace Stremio.Net.Models.Streams;
-
-public enum ExternalUriPlatform
+namespace Stremio.Net.Models.Streams
 {
-    [EnumMember(Value = "android")]
-    Android,
-    [EnumMember(Value = "ios")]
-    Ios
+    public enum ExternalUriPlatform
+    {
+        [EnumMember(Value = "android")]
+        Android,
+        [EnumMember(Value = "ios")]
+        Ios
+    }
 }
